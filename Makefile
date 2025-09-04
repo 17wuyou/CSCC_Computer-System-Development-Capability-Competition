@@ -1,34 +1,35 @@
-# Compiler: Use hipcc for DCU code
-CXX = hipcc
+CXX=g++
 
-# Compiler flags
-CXXFLAGS = -I./inc -O3
+CXX_CFLAGS=-O2 -w -std=c++14
+CXX_LDFLAGS=
 
-# Linker flags for DCU: Link rocblas and rocsparse
-LDFLAGS = -lrocblas -lrocsparse
+#目录
+DIR_OBJ = obj
+DIR_SRC = src
+DIR_INC = inc
 
-# Source files for DCU version
-SRCS = src/main.cpp src/gmres_dcu.cpp # 注意这里文件名变了
+#获取src下所有源文件
+CPP_SRCS = $(wildcard $(DIR_SRC)/*.cpp)
 
-# Object files
-OBJS = $(patsubst src/%.cpp, obj/%.o, $(SRCS))
+#目标文件 $(patsubst 原模式， 目标模式， 文件列表)
+AOBJS=$(patsubst $(DIR_SRC)/%.cpp, $(DIR_OBJ)/%.o, $(CPP_SRCS))
 
-# Executable name
-TARGET = gmres
+#头文件，依赖文件
+DEPS=$(wildcard $(DIR_INC)/*.hpp)
 
-# Default target
-all: $(TARGET)
+# 添加库和头文件路径
+LIBS=
+INCLUDES= -I./$(DIR_INC)
 
-# Link object files to create executable
-$(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $(TARGET) $(LDFLAGS)
+PROG = gmres
 
-# Compile source files to object files
-obj/%.o: src/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(DIR_OBJ)/%.o:$(DIR_SRC)/%.cpp
+	@mkdir -p $(DIR_OBJ)
+	$(CXX) -c $(CXX_CFLAGS) $(INCLUDES)  $< -o $@
 
-# Clean up
+$(PROG): $(AOBJS)
+	$(CXX) $(CXX_LDFLAGS) $(LIBS) $(INCLUDES)  $^ -o $@
+
+.PHONY:clean
 clean:
-	rm -f obj/*.o $(TARGET) gmres_time.txt *.out *.err
-
-.PHONY: all clean
+	rm -f $(DIR_OBJ)/*.o $(PROG)
