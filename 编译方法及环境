@@ -1,0 +1,13 @@
+编译环境 compiler/rocm/dtk-22.04.1 
+3.10-bandwidth.cpp  
+3.10-Reduce.cpp  
+3.1-vectoradd.cpp  
+3.2-Atomic.cpp  
+3.2-SmemBankConflict.cpp 
+3.4-VectorAdditionWithStream.cpp 
+3.6-MultiDCU.cpp
+
+编译环境 compiler/rocm/2.9
+3.10-GEMM.cpp  
+
+编译方法 hipcc xx.cpp -o xx
